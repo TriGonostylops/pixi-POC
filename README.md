@@ -1,6 +1,10 @@
 # Pixi-POC  
 *A proof of concept for a roguelite game using the PixiJS library.*  
 
+## Timeline  
+- **Start Date:** March 15, 2025  
+- **Due Date:** March 18, 2025  
+
 ## Goals  
 
 - **Room & Obstacles**: Create a game room with various obstacles.  
