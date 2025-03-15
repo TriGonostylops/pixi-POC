@@ -1,0 +1,17 @@
+{
+  "name": "pixi-poc",
+  "version": "1.0.0",
+  "description": "*A proof of concept for a roguelite game using the PixiJS library.*",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^8.8.1"
+  },
+  "devDependencies": {
+    "vite": "^6.2.2"
+  }
+}
