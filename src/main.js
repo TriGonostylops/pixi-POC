@@ -28,7 +28,11 @@ try {
     fontSize: 48,
     fontFamily: font.family,
   });
-
+  const buttonStyle = new TextStyle({
+    fill: 0xffffff,
+    fontSize: 24,
+    fontFamily: font.family,
+  });
   const text = new Text({
     text: "404 - Exit Not Found",
     style,
@@ -172,6 +176,84 @@ try {
     keys[event.key] = false;
   });
 
+  const obstacles = [];
+
+  const button = new Text("Generate obstacle", buttonStyle);
+  button.x = rectX + rectWidth / 2 - button.width / 2;
+  button.y = rectY + rectHeight + 20;
+  button.interactive = true;
+  button.buttonMode = true;
+
+  // Add background to the button
+  const buttonBackground = new Graphics()
+    .rect(button.x - 10, button.y - 10, button.width + 20, button.height + 20)
+    .fill({
+      color: 0x000000,
+      alpha: 0.5,
+    })
+    .stroke({
+      width: 2,
+      color: 0xffffff,
+    });
+  app.stage.addChild(buttonBackground);
+
+  button.on('pointerover', () => {
+    buttonBackground.tint = 0x555555;
+    button.style.fill = 0xffff00;
+  });
+
+  button.on('pointerout', () => {
+    buttonBackground.tint = 0x000000;
+    button.style.fill = 0xffffff;
+  });
+
+  button.on('pointerdown', () => {
+    const smallRectWidth = 30 + Math.random() * 20; // Random width between 30 and 50
+    const smallRectHeight = 30 + Math.random() * 20; // Random height between 30 and 50
+    let randomX, randomY;
+    let isColliding;
+
+    do {
+      randomX = rectX + Math.random() * (rectWidth - smallRectWidth);
+      randomY = rectY + Math.random() * (rectHeight - smallRectHeight);
+      const tempRect = { x: randomX, y: randomY, width: smallRectWidth, height: smallRectHeight };
+      isColliding = isCollidingWithObstacles(tempRect, obstacles) || isCollidingWithObstacles(tempRect, [sprite]);
+    } while (isColliding);
+
+    const smallRectangle = new Graphics()
+      .rect(0, 0, smallRectWidth, smallRectHeight)
+      .fill({
+        color: 0xff0000,
+        alpha: 0.9,
+      })
+      .stroke({
+        width: 4,
+        color: 0xffffff,
+      });
+    smallRectangle.x = randomX;
+    smallRectangle.y = randomY;
+
+    app.stage.addChild(smallRectangle);
+    obstacles.push(smallRectangle);
+    console.log("Small rectangle generated at:", randomX, randomY);
+  });
+
+  app.stage.addChild(button);
+  console.log("Button added to stage.");
+
+  // Function to check if the sprite is colliding with any obstacles
+  function isCollidingWithObstacles(spriteBounds, obstacles) {
+    return obstacles.some(obstacle => {
+      const obstacleBounds = getBounds(obstacle);
+      return (
+        spriteBounds.x < obstacleBounds.x + obstacleBounds.width &&
+        spriteBounds.x + spriteBounds.width > obstacleBounds.x &&
+        spriteBounds.y < obstacleBounds.y + obstacleBounds.height &&
+        spriteBounds.y + spriteBounds.height > obstacleBounds.y
+      );
+    });
+  }
+
   app.ticker.add(() => {
     let moving = false;
     let diagonal = false;
@@ -180,14 +262,11 @@ try {
     if ((keys["w"] || keys["ArrowUp"]) && (keys["a"] || keys["ArrowLeft"])) {
       sprite.y -= diagonalSpeed;
       sprite.x -= diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
         sprite.y += diagonalSpeed;
         sprite.x += diagonalSpeed;
       } else {
-        sprite.texture =
-          textures.upLeft[
-            Math.floor(frame / frameRate) % textures.upLeft.length
-          ];
+        sprite.texture = textures.upLeft[Math.floor(frame / frameRate) % textures.upLeft.length];
         lastDirection = "upLeft";
         diagonal = true;
         moving = true;
@@ -196,14 +275,11 @@ try {
     if ((keys["w"] || keys["ArrowUp"]) && (keys["d"] || keys["ArrowRight"])) {
       sprite.y -= diagonalSpeed;
       sprite.x += diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
         sprite.y += diagonalSpeed;
         sprite.x -= diagonalSpeed;
       } else {
-        sprite.texture =
-          textures.upRight[
-            Math.floor(frame / frameRate) % textures.upRight.length
-          ];
+        sprite.texture = textures.upRight[Math.floor(frame / frameRate) % textures.upRight.length];
         lastDirection = "upRight";
         diagonal = true;
         moving = true;
@@ -212,14 +288,11 @@ try {
     if ((keys["s"] || keys["ArrowDown"]) && (keys["a"] || keys["ArrowLeft"])) {
       sprite.y += diagonalSpeed;
       sprite.x -= diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
         sprite.y -= diagonalSpeed;
         sprite.x += diagonalSpeed;
       } else {
-        sprite.texture =
-          textures.downLeft[
-            Math.floor(frame / frameRate) % textures.downLeft.length
-          ];
+        sprite.texture = textures.downLeft[Math.floor(frame / frameRate) % textures.downLeft.length];
         lastDirection = "downLeft";
         diagonal = true;
         moving = true;
@@ -228,14 +301,11 @@ try {
     if ((keys["s"] || keys["ArrowDown"]) && (keys["d"] || keys["ArrowRight"])) {
       sprite.y += diagonalSpeed;
       sprite.x += diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
         sprite.y -= diagonalSpeed;
         sprite.x -= diagonalSpeed;
       } else {
-        sprite.texture =
-          textures.downRight[
-            Math.floor(frame / frameRate) % textures.downRight.length
-          ];
+        sprite.texture = textures.downRight[Math.floor(frame / frameRate) % textures.downRight.length];
         lastDirection = "downRight";
         diagonal = true;
         moving = true;
@@ -245,46 +315,40 @@ try {
     if (!diagonal) {
       if (keys["w"] || keys["ArrowUp"]) {
         sprite.y -= speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
           sprite.y += speed;
         } else {
-          sprite.texture =
-            textures.up[Math.floor(frame / frameRate) % textures.up.length];
+          sprite.texture = textures.up[Math.floor(frame / frameRate) % textures.up.length];
           lastDirection = "up";
           moving = true;
         }
       }
       if (keys["s"] || keys["ArrowDown"]) {
         sprite.y += speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
           sprite.y -= speed;
         } else {
-          sprite.texture =
-            textures.down[Math.floor(frame / frameRate) % textures.down.length];
+          sprite.texture = textures.down[Math.floor(frame / frameRate) % textures.down.length];
           lastDirection = "down";
           moving = true;
         }
       }
       if (keys["a"] || keys["ArrowLeft"]) {
         sprite.x -= speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
           sprite.x += speed;
         } else {
-          sprite.texture =
-            textures.left[Math.floor(frame / frameRate) % textures.left.length];
+          sprite.texture = textures.left[Math.floor(frame / frameRate) % textures.left.length];
           lastDirection = "left";
           moving = true;
         }
       }
       if (keys["d"] || keys["ArrowRight"]) {
         sprite.x += speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds)) {
+        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
           sprite.x -= speed;
         } else {
-          sprite.texture =
-            textures.right[
-              Math.floor(frame / frameRate) % textures.right.length
-            ];
+          sprite.texture = textures.right[Math.floor(frame / frameRate) % textures.right.length];
           lastDirection = "right";
           moving = true;
         }
@@ -297,6 +361,7 @@ try {
       sprite.texture = textures.stand[lastDirection]; // Keep the last directional sprite
     }
   });
+
 } catch (error) {
   console.error(
     "An error occurred while initializing the PixiJS application:",
