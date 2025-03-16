@@ -1,0 +1,214 @@
+{"frames": {
+
+"boy_run_E_1.png":
+{
+	"frame": {"x":0,"y":0,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_E_2.png":
+{
+	"frame": {"x":0,"y":16,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_N_1.png":
+{
+	"frame": {"x":0,"y":32,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_N_2.png":
+{
+	"frame": {"x":0,"y":48,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_NE_1.png":
+{
+	"frame": {"x":0,"y":64,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_NE_2.png":
+{
+	"frame": {"x":0,"y":80,"w":12,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":16},
+	"sourceSize": {"w":12,"h":16}
+},
+"boy_run_NW_1.png":
+{
+	"frame": {"x":0,"y":96,"w":12,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":16},
+	"sourceSize": {"w":12,"h":16}
+},
+"boy_run_NW_2.png":
+{
+	"frame": {"x":0,"y":112,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_S_1.png":
+{
+	"frame": {"x":0,"y":128,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_S_2.png":
+{
+	"frame": {"x":0,"y":144,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_SE_1.png":
+{
+	"frame": {"x":0,"y":160,"w":12,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":16},
+	"sourceSize": {"w":12,"h":16}
+},
+"boy_run_SE_2.png":
+{
+	"frame": {"x":0,"y":176,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_SW_1.png":
+{
+	"frame": {"x":0,"y":192,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_SW_2.png":
+{
+	"frame": {"x":0,"y":208,"w":12,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":16},
+	"sourceSize": {"w":12,"h":16}
+},
+"boy_run_W_1.png":
+{
+	"frame": {"x":0,"y":224,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_run_W_2.png":
+{
+	"frame": {"x":0,"y":240,"w":13,"h":16},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":16},
+	"sourceSize": {"w":13,"h":16}
+},
+"boy_stand_E.png":
+{
+	"frame": {"x":0,"y":256,"w":13,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":17},
+	"sourceSize": {"w":13,"h":17}
+},
+"boy_stand_N.png":
+{
+	"frame": {"x":0,"y":273,"w":13,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":17},
+	"sourceSize": {"w":13,"h":17}
+},
+"boy_stand_NE.png":
+{
+	"frame": {"x":0,"y":290,"w":12,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":17},
+	"sourceSize": {"w":12,"h":17}
+},
+"boy_stand_NW.png":
+{
+	"frame": {"x":0,"y":307,"w":12,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":17},
+	"sourceSize": {"w":12,"h":17}
+},
+"boy_stand_S.png":
+{
+	"frame": {"x":0,"y":324,"w":13,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":17},
+	"sourceSize": {"w":13,"h":17}
+},
+"boy_stand_SE.png":
+{
+	"frame": {"x":0,"y":341,"w":12,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":17},
+	"sourceSize": {"w":12,"h":17}
+},
+"boy_stand_SW.png":
+{
+	"frame": {"x":0,"y":358,"w":12,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":12,"h":17},
+	"sourceSize": {"w":12,"h":17}
+},
+"boy_stand_W.png":
+{
+	"frame": {"x":0,"y":375,"w":13,"h":17},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":13,"h":17},
+	"sourceSize": {"w":13,"h":17}
+}},
+"animations": {
+	"boy_run_E": ["boy_run_E_1.png","boy_run_E_2.png"],
+	"boy_run_N": ["boy_run_N_1.png","boy_run_N_2.png"],
+	"boy_run_NE": ["boy_run_NE_1.png","boy_run_NE_2.png"],
+	"boy_run_NW": ["boy_run_NW_1.png","boy_run_NW_2.png"],
+	"boy_run_S": ["boy_run_S_1.png","boy_run_S_2.png"],
+	"boy_run_SE": ["boy_run_SE_1.png","boy_run_SE_2.png"],
+	"boy_run_SW": ["boy_run_SW_1.png","boy_run_SW_2.png"],
+	"boy_run_W": ["boy_run_W_1.png","boy_run_W_2.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.1",
+	"image": "character_spritesheet.png",
+	"format": "RGBA8888",
+	"size": {"w":13,"h":392},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2b84c9bc0bee35ce64a9dc039a3e8a6d:12d83f94fff8273771cdceb82574ed36:80dcaca5a07f6384a7b65fdc53b25406$"
+}
+}
