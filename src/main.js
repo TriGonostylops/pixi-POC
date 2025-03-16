@@ -67,6 +67,8 @@ try {
   tilingSprite.x = rectX;
   tilingSprite.y = rectY;
   tilingSprite.tileScale.set(0.06, 0.06);
+  // We may use skew to simulate a 3D effect
+  // tilingSprite.skew.x = 0.5;
 
   app.stage.addChild(tilingSprite);
 
@@ -85,6 +87,7 @@ try {
   // Define textures for each direction
   const textures = {
     // We need more frames for the animation to "look smooth"...
+    // Animations and it's speed is also accessible/ modifiable in the spritesheet.json
     up: [
       spritesheet.textures["boy_run_N_1.png"],
       spritesheet.textures["boy_run_N_2.png"],
@@ -137,6 +140,24 @@ try {
     },
   };
 
+  // Load the Grim Reaper spritesheet
+  const grimReaperSpritesheet = await Assets.load("images/grim_reaper.json");
+  console.log("Grim Reaper spritesheet loaded:", grimReaperSpritesheet);
+
+  // Define Grim Reaper textures for each direction
+  const grimReaperTextures = {
+    stand: {
+      up: grimReaperSpritesheet.textures["GrimReaper_stand_N.png"],
+      down: grimReaperSpritesheet.textures["GrimReaper_stand_S.png"],
+      left: grimReaperSpritesheet.textures["GrimReaper_stand_W.png"],
+      right: grimReaperSpritesheet.textures["GrimReaper_stand_E.png"],
+      upLeft: grimReaperSpritesheet.textures["GrimReaper_stand_NW.png"],
+      upRight: grimReaperSpritesheet.textures["GrimReaper_stand_NE.png"],
+      downLeft: grimReaperSpritesheet.textures["GrimReaper_stand_SW.png"],
+      downRight: grimReaperSpritesheet.textures["GrimReaper_stand_SE.png"],
+    },
+  };
+
   document.body.appendChild(app.canvas);
   console.log("Canvas appended to document body.");
 
@@ -177,10 +198,11 @@ try {
   });
 
   const obstacles = [];
+  const enemies = [];
 
-  const button = new Text("Generate obstacle", buttonStyle);
-  button.x = rectX + rectWidth / 2 - button.width / 2;
-  button.y = rectY + rectHeight + 20;
+  const button = new Text({text: "Generate obstacle", style: buttonStyle});
+  button.x = rectX + rectWidth + 20; // Move to the right side of the rectangle
+  button.y = rectY;
   button.interactive = true;
   button.buttonMode = true;
 
@@ -197,17 +219,17 @@ try {
     });
   app.stage.addChild(buttonBackground);
 
-  button.on('pointerover', () => {
+  button.on("pointerover", () => {
     buttonBackground.tint = 0x555555;
     button.style.fill = 0xffff00;
   });
 
-  button.on('pointerout', () => {
+  button.on("pointerout", () => {
     buttonBackground.tint = 0x000000;
     button.style.fill = 0xffffff;
   });
 
-  button.on('pointerdown', () => {
+  button.on("pointerdown", () => {
     const smallRectWidth = 30 + Math.random() * 20; // Random width between 30 and 50
     const smallRectHeight = 30 + Math.random() * 20; // Random height between 30 and 50
     let randomX, randomY;
@@ -216,8 +238,15 @@ try {
     do {
       randomX = rectX + Math.random() * (rectWidth - smallRectWidth);
       randomY = rectY + Math.random() * (rectHeight - smallRectHeight);
-      const tempRect = { x: randomX, y: randomY, width: smallRectWidth, height: smallRectHeight };
-      isColliding = isCollidingWithObstacles(tempRect, obstacles) || isCollidingWithObstacles(tempRect, [sprite]);
+      const tempRect = {
+        x: randomX,
+        y: randomY,
+        width: smallRectWidth,
+        height: smallRectHeight,
+      };
+      isColliding =
+        isCollidingWithObstacles(tempRect, obstacles) ||
+        isCollidingWithObstacles(tempRect, [sprite]);
     } while (isColliding);
 
     const smallRectangle = new Graphics()
@@ -241,9 +270,70 @@ try {
   app.stage.addChild(button);
   console.log("Button added to stage.");
 
-  // Function to check if the sprite is colliding with any obstacles
+  // Add enemy button
+  const enemyButton = new Text({text: "Add enemy", style: buttonStyle});
+  enemyButton.x = rectX + rectWidth + 20; // Move to the right side of the rectangle
+  enemyButton.y = button.y + button.height + 50;
+  enemyButton.interactive = true;
+  enemyButton.buttonMode = true;
+
+  // Add background to the enemy button
+  const enemyButtonBackground = new Graphics()
+    .rect(
+      enemyButton.x - 10,
+      enemyButton.y - 10,
+      enemyButton.width + 20,
+      enemyButton.height + 20
+    )
+    .fill({
+      color: 0x000000,
+      alpha: 0.5,
+    })
+    .stroke({
+      width: 2,
+      color: 0xffffff,
+    });
+  app.stage.addChild(enemyButtonBackground);
+
+  enemyButton.on("pointerover", () => {
+    enemyButtonBackground.tint = 0x555555;
+    enemyButton.style.fill = 0xffff00;
+  });
+
+  enemyButton.on("pointerout", () => {
+    enemyButtonBackground.tint = 0x000000;
+    enemyButton.style.fill = 0xffffff;
+  });
+
+  enemyButton.on("pointerdown", async () => {
+    let randomX, randomY;
+    let isColliding;
+
+    do {
+      randomX = rectX + Math.random() * (rectWidth - 50);
+      randomY = rectY + Math.random() * (rectHeight - 50);
+      const tempRect = { x: randomX, y: randomY, width: 50, height: 50 };
+      isColliding =
+        isCollidingWithObstacles(tempRect, obstacles) ||
+        isCollidingWithObstacles(tempRect, [sprite]);
+    } while (isColliding);
+
+    const enemy = new Sprite(grimReaperTextures.stand.down);
+    enemy.x = randomX;
+    enemy.y = randomY;
+    enemy.scale.set(1.5, 1.5);
+
+    app.stage.addChild(enemy);
+    enemies.push(enemy);
+    console.log("Enemy added at:", randomX, randomY);
+  });
+
+  app.stage.addChild(enemyButton);
+  console.log("Enemy button added to stage.");
+
+  // Function to check if the sprite is colliding with any obstacles or enemies
   function isCollidingWithObstacles(spriteBounds, obstacles) {
-    return obstacles.some(obstacle => {
+    return obstacles.some((obstacle) => {
       const obstacleBounds = getBounds(obstacle);
       return (
         spriteBounds.x < obstacleBounds.x + obstacleBounds.width &&
@@ -251,6 +341,177 @@ try {
         spriteBounds.y < obstacleBounds.y + obstacleBounds.height &&
         spriteBounds.y + spriteBounds.height > obstacleBounds.y
       );
+    });
+  }
+
+  // Function to check if the enemy is colliding with the player
+  function isCollidingWithPlayer(enemyBounds, playerBounds) {
+    return (
+      enemyBounds.x < playerBounds.x + playerBounds.width &&
+      enemyBounds.x + enemyBounds.width > playerBounds.x &&
+      enemyBounds.y < playerBounds.y + playerBounds.height &&
+      enemyBounds.y + enemyBounds.height > playerBounds.y
+    );
+  }
+
+  // Function to move enemies
+  function moveEnemies() {
+    enemies.forEach((enemy) => {
+      if (!enemy.direction || enemy.stepsRemaining <= 0) {
+        enemy.direction = Math.floor(Math.random() * 8); // Randomize direction (0 for up, 1 for down, 2 for left, 3 for right, 4 for up-left, 5 for up-right, 6 for down-left, 7 for down-right)
+        enemy.stepsRemaining = 30 + Math.random() * 70; // Randomize steps between 30 and 100
+      }
+
+      const moveDistance = 2; // Use a consistent move distance
+
+      switch (enemy.direction) {
+        case 0: // Move up
+          enemy.y -= moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y += moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.up; // Use static image for up direction
+          }
+          break;
+        case 1: // Move down
+          enemy.y += moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y -= moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.down; // Use static image for down direction
+          }
+          break;
+        case 2: // Move left
+          enemy.x -= moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.x += moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.left; // Use static image for left direction
+          }
+          break;
+        case 3: // Move right
+          enemy.x += moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.x -= moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.right; // Use static image for right direction
+          }
+          break;
+        case 4: // Move up-left
+          enemy.y -= moveDistance;
+          enemy.x -= moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y += moveDistance;
+            enemy.x += moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.upLeft; // Use static image for up-left direction
+          }
+          break;
+        case 5: // Move up-right
+          enemy.y -= moveDistance;
+          enemy.x += moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y += moveDistance;
+            enemy.x -= moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.upRight; // Use static image for up-right direction
+          }
+          break;
+        case 6: // Move down-left
+          enemy.y += moveDistance;
+          enemy.x -= moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y -= moveDistance;
+            enemy.x += moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.downLeft; // Use static image for down-left direction
+          }
+          break;
+        case 7: // Move down-right
+          enemy.y += moveDistance;
+          enemy.x += moveDistance;
+          if (
+            !isWithinBounds(getBounds(enemy), getBounds(rectangle)) ||
+            isCollidingWithObstacles(getBounds(enemy), obstacles) ||
+            isCollidingWithObstacles(
+              getBounds(enemy),
+              enemies.filter((e) => e !== enemy)
+            ) ||
+            isCollidingWithPlayer(getBounds(enemy), getBounds(sprite))
+          ) {
+            enemy.y -= moveDistance;
+            enemy.x -= moveDistance;
+            enemy.stepsRemaining = 0; // Change direction if collision occurs
+          } else {
+            enemy.texture = grimReaperTextures.stand.downRight; // Use static image for down-right direction
+          }
+          break;
+      }
+      
+      enemy.stepsRemaining--;
     });
   }
 
@@ -262,11 +523,18 @@ try {
     if ((keys["w"] || keys["ArrowUp"]) && (keys["a"] || keys["ArrowLeft"])) {
       sprite.y -= diagonalSpeed;
       sprite.x -= diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+      if (
+        !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+        isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+        isCollidingWithObstacles(getBounds(sprite), enemies)
+      ) {
         sprite.y += diagonalSpeed;
         sprite.x += diagonalSpeed;
       } else {
-        sprite.texture = textures.upLeft[Math.floor(frame / frameRate) % textures.upLeft.length];
+        sprite.texture =
+          textures.upLeft[
+            Math.floor(frame / frameRate) % textures.upLeft.length
+          ];
         lastDirection = "upLeft";
         diagonal = true;
         moving = true;
@@ -275,11 +543,18 @@ try {
     if ((keys["w"] || keys["ArrowUp"]) && (keys["d"] || keys["ArrowRight"])) {
       sprite.y -= diagonalSpeed;
       sprite.x += diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+      if (
+        !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+        isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+        isCollidingWithObstacles(getBounds(sprite), enemies)
+      ) {
         sprite.y += diagonalSpeed;
         sprite.x -= diagonalSpeed;
       } else {
-        sprite.texture = textures.upRight[Math.floor(frame / frameRate) % textures.upRight.length];
+        sprite.texture =
+          textures.upRight[
+            Math.floor(frame / frameRate) % textures.upRight.length
+          ];
         lastDirection = "upRight";
         diagonal = true;
         moving = true;
@@ -288,11 +563,18 @@ try {
     if ((keys["s"] || keys["ArrowDown"]) && (keys["a"] || keys["ArrowLeft"])) {
       sprite.y += diagonalSpeed;
       sprite.x -= diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+      if (
+        !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+        isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+        isCollidingWithObstacles(getBounds(sprite), enemies)
+      ) {
         sprite.y -= diagonalSpeed;
         sprite.x += diagonalSpeed;
       } else {
-        sprite.texture = textures.downLeft[Math.floor(frame / frameRate) % textures.downLeft.length];
+        sprite.texture =
+          textures.downLeft[
+            Math.floor(frame / frameRate) % textures.downLeft.length
+          ];
         lastDirection = "downLeft";
         diagonal = true;
         moving = true;
@@ -301,11 +583,18 @@ try {
     if ((keys["s"] || keys["ArrowDown"]) && (keys["d"] || keys["ArrowRight"])) {
       sprite.y += diagonalSpeed;
       sprite.x += diagonalSpeed;
-      if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+      if (
+        !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+        isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+        isCollidingWithObstacles(getBounds(sprite), enemies)
+      ) {
         sprite.y -= diagonalSpeed;
         sprite.x -= diagonalSpeed;
       } else {
-        sprite.texture = textures.downRight[Math.floor(frame / frameRate) % textures.downRight.length];
+        sprite.texture =
+          textures.downRight[
+            Math.floor(frame / frameRate) % textures.downRight.length
+          ];
         lastDirection = "downRight";
         diagonal = true;
         moving = true;
@@ -315,40 +604,62 @@ try {
     if (!diagonal) {
       if (keys["w"] || keys["ArrowUp"]) {
         sprite.y -= speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+        if (
+          !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+          isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+          isCollidingWithObstacles(getBounds(sprite), enemies)
+        ) {
           sprite.y += speed;
         } else {
-          sprite.texture = textures.up[Math.floor(frame / frameRate) % textures.up.length];
+          sprite.texture =
+            textures.up[Math.floor(frame / frameRate) % textures.up.length];
           lastDirection = "up";
           moving = true;
         }
       }
       if (keys["s"] || keys["ArrowDown"]) {
         sprite.y += speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+        if (
+          !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+          isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+          isCollidingWithObstacles(getBounds(sprite), enemies)
+        ) {
           sprite.y -= speed;
         } else {
-          sprite.texture = textures.down[Math.floor(frame / frameRate) % textures.down.length];
+          sprite.texture =
+            textures.down[Math.floor(frame / frameRate) % textures.down.length];
           lastDirection = "down";
           moving = true;
         }
       }
       if (keys["a"] || keys["ArrowLeft"]) {
         sprite.x -= speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+        if (
+          !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+          isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+          isCollidingWithObstacles(getBounds(sprite), enemies)
+        ) {
           sprite.x += speed;
         } else {
-          sprite.texture = textures.left[Math.floor(frame / frameRate) % textures.left.length];
+          sprite.texture =
+            textures.left[Math.floor(frame / frameRate) % textures.left.length];
           lastDirection = "left";
           moving = true;
         }
       }
       if (keys["d"] || keys["ArrowRight"]) {
         sprite.x += speed;
-        if (!isWithinBounds(getBounds(sprite), rectangleBounds) || isCollidingWithObstacles(getBounds(sprite), obstacles)) {
+        if (
+          !isWithinBounds(getBounds(sprite), rectangleBounds) ||
+          isCollidingWithObstacles(getBounds(sprite), obstacles) ||
+          isCollidingWithObstacles(getBounds(sprite), enemies)
+        ) {
           sprite.x -= speed;
         } else {
-          sprite.texture = textures.right[Math.floor(frame / frameRate) % textures.right.length];
+          sprite.texture =
+            textures.right[
+              Math.floor(frame / frameRate) % textures.right.length
+            ];
           lastDirection = "right";
           moving = true;
         }
@@ -360,8 +671,9 @@ try {
     } else {
       sprite.texture = textures.stand[lastDirection]; // Keep the last directional sprite
     }
-  });
 
+    moveEnemies(); // Move enemies
+  });
 } catch (error) {
   console.error(
     "An error occurred while initializing the PixiJS application:",
