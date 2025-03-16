@@ -72,7 +72,7 @@ try {
 
   // Define textures for each direction
 const textures = {
-  // We need more frames for the animation to "look smooth"...
+// We need more frames for the animation to "look smooth"...
   up: [
     spritesheet.textures['boy_run_N_1.png'],
     spritesheet.textures['boy_run_N_2.png'],
@@ -97,11 +97,31 @@ const textures = {
     spritesheet.textures['boy_run_E_1.png'],
     spritesheet.textures['boy_run_E_2.png']
   ],
+  upLeft: [
+    spritesheet.textures['boy_run_NW_1.png'],
+    spritesheet.textures['boy_run_NW_2.png']
+  ],
+  upRight: [
+    spritesheet.textures['boy_run_NE_1.png'],
+    spritesheet.textures['boy_run_NE_2.png']
+  ],
+  downLeft: [
+    spritesheet.textures['boy_run_SW_1.png'],
+    spritesheet.textures['boy_run_SW_2.png']
+  ],
+  downRight: [
+    spritesheet.textures['boy_run_SE_1.png'],
+    spritesheet.textures['boy_run_SE_2.png']
+  ],
   stand: {
     up: spritesheet.textures['boy_stand_N.png'],
     down: spritesheet.textures['boy_stand_S.png'],
     left: spritesheet.textures['boy_stand_W.png'],
-    right: spritesheet.textures['boy_stand_E.png']
+    right: spritesheet.textures['boy_stand_E.png'],
+    upLeft: spritesheet.textures['boy_stand_NW.png'],
+    upRight: spritesheet.textures['boy_stand_NE.png'],
+    downLeft: spritesheet.textures['boy_stand_SW.png'],
+    downRight: spritesheet.textures['boy_stand_SE.png']
   }
 };
 
@@ -110,6 +130,7 @@ const textures = {
 
   // Implement movement for the sprite
   const speed = 3;
+  const diagonalSpeed = speed / Math.sqrt(2); // Adjust speed for diagonal movement
   const keys = {};
   let frame = 0;
   let lastDirection = 'down'; 
@@ -125,30 +146,66 @@ const textures = {
 
   app.ticker.add(() => {
     let moving = false;
+    let diagonal = false;
   
-    if (keys['w'] || keys['ArrowUp']) {
-      sprite.y -= speed;
-      sprite.texture = textures.up[Math.floor(frame / frameRate) % textures.up.length];
-      lastDirection = 'up';
+    if ((keys['w'] || keys['ArrowUp']) && (keys['a'] || keys['ArrowLeft'])) {
+      sprite.y -= diagonalSpeed;
+      sprite.x -= diagonalSpeed;
+      sprite.texture = textures.upLeft[Math.floor(frame / frameRate) % textures.upLeft.length];
+      lastDirection = 'upLeft';
+      diagonal = true;
       moving = true;
     }
-    if (keys['s'] || keys['ArrowDown']) {
-      sprite.y += speed;
-      sprite.texture = textures.down[Math.floor(frame / frameRate) % textures.down.length];
-      lastDirection = 'down';
+    if ((keys['w'] || keys['ArrowUp']) && (keys['d'] || keys['ArrowRight'])) {
+      sprite.y -= diagonalSpeed;
+      sprite.x += diagonalSpeed;
+      sprite.texture = textures.upRight[Math.floor(frame / frameRate) % textures.upRight.length];
+      lastDirection = 'upRight';
+      diagonal = true;
       moving = true;
     }
-    if (keys['a'] || keys['ArrowLeft']) {
-      sprite.x -= speed;
-      sprite.texture = textures.left[Math.floor(frame / frameRate) % textures.left.length];
-      lastDirection = 'left';
+    if ((keys['s'] || keys['ArrowDown']) && (keys['a'] || keys['ArrowLeft'])) {
+      sprite.y += diagonalSpeed;
+      sprite.x -= diagonalSpeed;
+      sprite.texture = textures.downLeft[Math.floor(frame / frameRate) % textures.downLeft.length];
+      lastDirection = 'downLeft';
+      diagonal = true;
       moving = true;
     }
-    if (keys['d'] || keys['ArrowRight']) {
-      sprite.x += speed;
-      sprite.texture = textures.right[Math.floor(frame / frameRate) % textures.right.length];
-      lastDirection = 'right';
+    if ((keys['s'] || keys['ArrowDown']) && (keys['d'] || keys['ArrowRight'])) {
+      sprite.y += diagonalSpeed;
+      sprite.x += diagonalSpeed;
+      sprite.texture = textures.downRight[Math.floor(frame / frameRate) % textures.downRight.length];
+      lastDirection = 'downRight';
+      diagonal = true;
       moving = true;
+    }
+  
+    if (!diagonal) {
+      if (keys['w'] || keys['ArrowUp']) {
+        sprite.y -= speed;
+        sprite.texture = textures.up[Math.floor(frame / frameRate) % textures.up.length];
+        lastDirection = 'up';
+        moving = true;
+      }
+      if (keys['s'] || keys['ArrowDown']) {
+        sprite.y += speed;
+        sprite.texture = textures.down[Math.floor(frame / frameRate) % textures.down.length];
+        lastDirection = 'down';
+        moving = true;
+      }
+      if (keys['a'] || keys['ArrowLeft']) {
+        sprite.x -= speed;
+        sprite.texture = textures.left[Math.floor(frame / frameRate) % textures.left.length];
+        lastDirection = 'left';
+        moving = true;
+      }
+      if (keys['d'] || keys['ArrowRight']) {
+        sprite.x += speed;
+        sprite.texture = textures.right[Math.floor(frame / frameRate) % textures.right.length];
+        lastDirection = 'right';
+        moving = true;
+      }
     }
   
     if (moving) {
