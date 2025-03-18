@@ -1,4 +1,4 @@
-import { Assets } from "pixi.js";
+import {Assets} from "pixi.js";
 
 export async function loadAssets() {
     const font = await Assets.load("fonts/PressStart2P-Regular.ttf");
