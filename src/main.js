@@ -8,6 +8,8 @@ import {
   Sprite,
 } from "pixi.js";
 import { initDevtools } from "@pixi/devtools";
+import { loadAssets } from "./assets"
+
 try {
   console.log("Initializing PixiJS application...");
 
@@ -18,6 +20,7 @@ try {
   });
 
   initDevtools({ app });
+  const assets = await loadAssets();
 
   app.canvas.style.position = "absolute";
   console.log("PixiJS application initialized:", app);
@@ -72,91 +75,12 @@ try {
 
   app.stage.addChild(tilingSprite);
 
-  // Load the spritesheet
-  const spritesheet = await Assets.load("images/character_spritesheet.json");
-  console.log("Spritesheet loaded:", spritesheet);
-
-  // Create a sprite from the spritesheet
-  const sprite = new Sprite(spritesheet.textures["boy_stand_S.png"]);
+  const sprite = new Sprite(assets.textures.down);
   sprite.x = 400;
   sprite.y = 300;
   sprite.scale.set(2, 2);
   app.stage.addChild(sprite);
   console.log("Sprite added to stage.");
-
-  // Define textures for each direction
-  const textures = {
-    // We need more frames for the animation to "look smooth"...
-    // Animations and it's speed is also accessible/ modifiable in the spritesheet.json
-    up: [
-      spritesheet.textures["boy_run_N_1.png"],
-      spritesheet.textures["boy_run_N_2.png"],
-      spritesheet.textures["boy_run_N_1.png"],
-      spritesheet.textures["boy_run_N_2.png"],
-    ],
-    down: [
-      spritesheet.textures["boy_run_S_1.png"],
-      spritesheet.textures["boy_run_S_2.png"],
-      spritesheet.textures["boy_run_S_1.png"],
-      spritesheet.textures["boy_run_S_2.png"],
-    ],
-    left: [
-      spritesheet.textures["boy_run_W_1.png"],
-      spritesheet.textures["boy_run_W_2.png"],
-      spritesheet.textures["boy_run_W_1.png"],
-      spritesheet.textures["boy_run_W_2.png"],
-    ],
-    right: [
-      spritesheet.textures["boy_run_E_1.png"],
-      spritesheet.textures["boy_run_E_2.png"],
-      spritesheet.textures["boy_run_E_1.png"],
-      spritesheet.textures["boy_run_E_2.png"],
-    ],
-    upLeft: [
-      spritesheet.textures["boy_run_NW_1.png"],
-      spritesheet.textures["boy_run_NW_2.png"],
-    ],
-    upRight: [
-      spritesheet.textures["boy_run_NE_1.png"],
-      spritesheet.textures["boy_run_NE_2.png"],
-    ],
-    downLeft: [
-      spritesheet.textures["boy_run_SW_1.png"],
-      spritesheet.textures["boy_run_SW_2.png"],
-    ],
-    downRight: [
-      spritesheet.textures["boy_run_SE_1.png"],
-      spritesheet.textures["boy_run_SE_2.png"],
-    ],
-    stand: {
-      up: spritesheet.textures["boy_stand_N.png"],
-      down: spritesheet.textures["boy_stand_S.png"],
-      left: spritesheet.textures["boy_stand_W.png"],
-      right: spritesheet.textures["boy_stand_E.png"],
-      upLeft: spritesheet.textures["boy_stand_NW.png"],
-      upRight: spritesheet.textures["boy_stand_NE.png"],
-      downLeft: spritesheet.textures["boy_stand_SW.png"],
-      downRight: spritesheet.textures["boy_stand_SE.png"],
-    },
-  };
-
-  // Load the Grim Reaper spritesheet
-  const grimReaperSpritesheet = await Assets.load("images/grim_reaper.json");
-  console.log("Grim Reaper spritesheet loaded:", grimReaperSpritesheet);
-
-  // Define Grim Reaper textures for each direction
-  const grimReaperTextures = {
-    stand: {
-      up: grimReaperSpritesheet.textures["GrimReaper_stand_N.png"],
-      down: grimReaperSpritesheet.textures["GrimReaper_stand_S.png"],
-      left: grimReaperSpritesheet.textures["GrimReaper_stand_W.png"],
-      right: grimReaperSpritesheet.textures["GrimReaper_stand_E.png"],
-      upLeft: grimReaperSpritesheet.textures["GrimReaper_stand_NW.png"],
-      upRight: grimReaperSpritesheet.textures["GrimReaper_stand_NE.png"],
-      downLeft: grimReaperSpritesheet.textures["GrimReaper_stand_SW.png"],
-      downRight: grimReaperSpritesheet.textures["GrimReaper_stand_SE.png"],
-    },
-  };
 
   document.body.appendChild(app.canvas);
   console.log("Canvas appended to document body.");
@@ -318,7 +242,7 @@ try {
         isCollidingWithObstacles(tempRect, [sprite]);
     } while (isColliding);
 
-    const enemy = new Sprite(grimReaperTextures.stand.down);
+    const enemy = new Sprite(assets.grimReaperTextures.stand.down);
     enemy.x = randomX;
     enemy.y = randomY;
     enemy.scale.set(1.5, 1.5);
@@ -379,7 +303,7 @@ try {
             enemy.y += moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.up; // Use static image for up direction
+            enemy.texture = assets.grimReaperTextures.stand.up; // Use static image for up direction
           }
           break;
         case 1: // Move down
@@ -396,7 +320,7 @@ try {
             enemy.y -= moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.down; // Use static image for down direction
+            enemy.texture = assets.grimReaperTextures.stand.down; // Use static image for down direction
           }
           break;
         case 2: // Move left
@@ -413,7 +337,7 @@ try {
             enemy.x += moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.left; // Use static image for left direction
+            enemy.texture = assets.grimReaperTextures.stand.left; // Use static image for left direction
           }
           break;
         case 3: // Move right
@@ -430,7 +354,7 @@ try {
             enemy.x -= moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.right; // Use static image for right direction
+            enemy.texture = assets.grimReaperTextures.stand.right; // Use static image for right direction
           }
           break;
         case 4: // Move up-left
@@ -449,7 +373,7 @@ try {
             enemy.x += moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.upLeft; // Use static image for up-left direction
+            enemy.texture = assets.grimReaperTextures.stand.upLeft; // Use static image for up-left direction
           }
           break;
         case 5: // Move up-right
@@ -468,7 +392,7 @@ try {
             enemy.x -= moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.upRight; // Use static image for up-right direction
+            enemy.texture = assets.grimReaperTextures.stand.down; // Use static image for up-right direction
           }
           break;
         case 6: // Move down-left
@@ -487,7 +411,7 @@ try {
             enemy.x += moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.downLeft; // Use static image for down-left direction
+            enemy.texture = assets.grimReaperTextures.stand.downLeft; // Use static image for down-left direction
           }
           break;
         case 7: // Move down-right
@@ -506,7 +430,7 @@ try {
             enemy.x -= moveDistance;
             enemy.stepsRemaining = 0; // Change direction if collision occurs
           } else {
-            enemy.texture = grimReaperTextures.stand.downRight; // Use static image for down-right direction
+            enemy.texture = assets.grimReaperTextures.stand.downRight; // Use static image for down-right direction
           }
           break;
       }
@@ -532,8 +456,8 @@ try {
         sprite.x += diagonalSpeed;
       } else {
         sprite.texture =
-          textures.upLeft[
-            Math.floor(frame / frameRate) % textures.upLeft.length
+          assets.textures.upLeft[
+            Math.floor(frame / frameRate) % assets.textures.upLeft.length
           ];
         lastDirection = "upLeft";
         diagonal = true;
@@ -552,8 +476,8 @@ try {
         sprite.x -= diagonalSpeed;
       } else {
         sprite.texture =
-          textures.upRight[
-            Math.floor(frame / frameRate) % textures.upRight.length
+          assets.textures.upRight[
+            Math.floor(frame / frameRate) % assets.textures.upRight.length
           ];
         lastDirection = "upRight";
         diagonal = true;
@@ -572,8 +496,8 @@ try {
         sprite.x += diagonalSpeed;
       } else {
         sprite.texture =
-          textures.downLeft[
-            Math.floor(frame / frameRate) % textures.downLeft.length
+          assets.textures.downLeft[
+            Math.floor(frame / frameRate) % assets.textures.downLeft.length
           ];
         lastDirection = "downLeft";
         diagonal = true;
@@ -592,8 +516,8 @@ try {
         sprite.x -= diagonalSpeed;
       } else {
         sprite.texture =
-          textures.downRight[
-            Math.floor(frame / frameRate) % textures.downRight.length
+          assets.textures.downRight[
+            Math.floor(frame / frameRate) % assets.textures.downRight.length
           ];
         lastDirection = "downRight";
         diagonal = true;
@@ -612,7 +536,7 @@ try {
           sprite.y += speed;
         } else {
           sprite.texture =
-            textures.up[Math.floor(frame / frameRate) % textures.up.length];
+            assets.textures.up[Math.floor(frame / frameRate) % assets.textures.up.length];
           lastDirection = "up";
           moving = true;
         }
@@ -627,7 +551,7 @@ try {
           sprite.y -= speed;
         } else {
           sprite.texture =
-            textures.down[Math.floor(frame / frameRate) % textures.down.length];
+            assets.textures.down[Math.floor(frame / frameRate) % assets.textures.down.length];
           lastDirection = "down";
           moving = true;
         }
@@ -642,7 +566,7 @@ try {
           sprite.x += speed;
         } else {
           sprite.texture =
-            textures.left[Math.floor(frame / frameRate) % textures.left.length];
+            assets.textures.left[Math.floor(frame / frameRate) % assets.textures.left.length];
           lastDirection = "left";
           moving = true;
         }
@@ -657,8 +581,8 @@ try {
           sprite.x -= speed;
         } else {
           sprite.texture =
-            textures.right[
-              Math.floor(frame / frameRate) % textures.right.length
+            assets.textures.right[
+              Math.floor(frame / frameRate) % assets.textures.right.length
             ];
           lastDirection = "right";
           moving = true;
@@ -669,7 +593,7 @@ try {
     if (moving) {
       frame++;
     } else {
-      sprite.texture = textures.stand[lastDirection]; // Keep the last directional sprite
+      sprite.texture = assets.textures.stand[lastDirection]; // Keep the last directional sprite
     }
 
     moveEnemies(); // Move enemies
